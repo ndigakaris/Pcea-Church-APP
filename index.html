@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PCEA Church Member Registry</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --green-50:#EAF3DE;--green-100:#C0DD97;--green-200:#97C459;
+  --green-600:#3B6D11;--green-700:#2f5a0d;--green-800:#27500A;--green-900:#173404;
+  --teal-50:#E1F5EE;--teal-100:#9FE1CB;--teal-600:#0F6E56;--teal-800:#085041;
+  --amber-50:#FAEEDA;--amber-100:#FAC775;--amber-800:#633806;
+  --red-50:#FCEBEB;--red-600:#A32D2D;
+  --gray-50:#F1EFE8;--gray-100:#D3D1C7;--gray-600:#5F5E5A;
+  --bg:#fafaf7;--surface:#fff;--border:#e2e0d8;
+  --text:#1a1a18;--muted:#5F5E5A;--label:#27500A;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* Header */
+.header{background:var(--green-900);position:relative;overflow:hidden;}
+.header-inner{max-width:960px;margin:0 auto;padding:2.5rem 2rem 2rem;display:flex;align-items:center;gap:1.5rem;position:relative;z-index:1;}
+.cross{width:56px;height:56px;flex-shrink:0;position:relative;display:flex;align-items:center;justify-content:center;}
+.cross::before,.cross::after{content:'';position:absolute;background:var(--green-100);border-radius:3px;}
+.cross::before{width:11px;height:56px;}.cross::after{width:56px;height:11px;}
+.header-text h1{font-family:'Playfair Display',serif;font-size:1.85rem;font-weight:700;color:#fff;line-height:1.2;}
+.header-text p{color:var(--green-100);font-size:.88rem;margin-top:4px;letter-spacing:.04em;}
+.hbg{position:absolute;border:40px solid white;border-radius:50%;opacity:.04;pointer-events:none;}
+
+/* Nav */
+.nav-tabs{background:var(--green-800);display:flex;overflow-x:auto;}
+.nav-tabs button{font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:500;letter-spacing:.04em;color:var(--green-100);background:none;border:none;padding:.8rem 1.4rem;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;}
+.nav-tabs button.active{color:#fff;border-bottom-color:var(--green-200);}
+.nav-tabs button:hover:not(.active){color:#fff;background:rgba(255,255,255,.06);}
+
+/* Layout */
+.main{max-width:960px;margin:0 auto;padding:2rem 1rem 4rem;}
+
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:2rem;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;border-left:4px solid var(--green-600);}
+.stat-num{font-size:1.8rem;font-weight:600;color:var(--green-800);font-family:'Playfair Display',serif;}
+.stat-label{font-size:.78rem;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.05em;}
+
+/* Form card */
+.form-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:2rem;margin-bottom:2rem;}
+.form-card h2{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:600;color:var(--green-900);margin-bottom:1.5rem;padding-bottom:.75rem;border-bottom:1px solid var(--border);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.form-grid.three{grid-template-columns:1fr 1fr 1fr;}
+@media(max-width:600px){.form-grid,.form-grid.three{grid-template-columns:1fr;}}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:.8rem;font-weight:500;color:var(--label);letter-spacing:.02em;}
+.field input,.field select,.field textarea{font-family:'DM Sans',sans-serif;font-size:.92rem;border:1px solid var(--border);border-radius:8px;padding:.6rem .85rem;background:var(--bg);color:var(--text);outline:none;transition:border .2s,box-shadow .2s;width:100%;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--green-600);box-shadow:0 0 0 3px rgba(59,109,17,.12);}
+.field textarea{resize:vertical;min-height:80px;}
+.full{grid-column:1/-1;}
+
+.section-title{font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:1.5rem 0 1rem;display:flex;align-items:center;gap:8px;}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.required::after{content:' *';color:var(--red-600);}
+
+/* Buttons */
+.btn-row{display:flex;gap:12px;margin-top:1.5rem;flex-wrap:wrap;}
+.btn{font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:500;padding:.65rem 1.5rem;border-radius:8px;cursor:pointer;border:none;transition:all .18s;display:inline-flex;align-items:center;gap:6px;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.btn-primary{background:var(--green-800);color:#fff;}
+.btn-primary:hover:not(:disabled){background:var(--green-900);transform:translateY(-1px);}
+.btn-secondary{background:transparent;color:var(--green-800);border:1px solid var(--green-600);}
+.btn-secondary:hover:not(:disabled){background:var(--green-50);}
+.btn-danger{background:transparent;color:var(--red-600);border:1px solid var(--red-600);}
+.btn-danger:hover:not(:disabled){background:var(--red-50);}
+
+/* Search */
+.search-bar{display:flex;gap:12px;margin-bottom:1rem;flex-wrap:wrap;align-items:center;}
+.search-bar input,.search-bar select{font-family:'DM Sans',sans-serif;font-size:.88rem;border:1px solid var(--border);border-radius:8px;padding:.55rem .85rem;background:var(--bg);color:var(--text);outline:none;}
+.search-bar input{flex:1;min-width:180px;}
+.search-bar input:focus,.search-bar select:focus{border-color:var(--green-600);box-shadow:0 0 0 3px rgba(59,109,17,.1);}
+
+/* Table */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:.87rem;}
+thead tr{background:var(--green-50);}
+th{text-align:left;padding:.7rem 1rem;font-size:.75rem;font-weight:600;color:var(--green-800);letter-spacing:.05em;text-transform:uppercase;border-bottom:2px solid var(--green-100);}
+td{padding:.75rem 1rem;border-bottom:1px solid var(--border);vertical-align:middle;}
+tr:hover td{background:var(--green-50);}
+
+/* Badges */
+.badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:.75rem;font-weight:500;}
+.badge-active{background:var(--green-50);color:var(--green-800);border:1px solid var(--green-100);}
+.badge-elder{background:var(--amber-50);color:var(--amber-800);border:1px solid var(--amber-100);}
+.badge-deacon{background:var(--teal-50);color:var(--teal-800);border:1px solid var(--teal-100);}
+.badge-member{background:var(--gray-50);color:var(--gray-600);border:1px solid var(--gray-100);}
+
+/* Avatar */
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--green-50);border:1px solid var(--green-100);display:inline-flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:600;color:var(--green-800);flex-shrink:0;}
+.name-cell{display:flex;align-items:center;gap:10px;}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:#fff;border-radius:14px;padding:2rem;max-width:540px;width:90%;max-height:90vh;overflow-y:auto;}
+.modal h2{font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:1.2rem;}
+.modal-close{float:right;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--muted);}
+
+/* Toast */
+#toast{position:fixed;bottom:2rem;right:2rem;background:var(--green-800);color:#fff;padding:.8rem 1.5rem;border-radius:10px;font-size:.88rem;font-weight:500;opacity:0;transform:translateY(12px);transition:all .3s;pointer-events:none;z-index:999;max-width:320px;}
+#toast.show{opacity:1;transform:translateY(0);}
+
+/* States */
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--muted);}
+.empty-state .icon{font-size:2.5rem;margin-bottom:.75rem;}
+.loading{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.9rem;padding:2rem 0;}
+.spinner{width:18px;height:18px;border:2px solid var(--green-100);border-top-color:var(--green-600);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* Banner */
+.conn-banner{background:var(--amber-50);border:1px solid var(--amber-100);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:.88rem;color:var(--amber-800);display:none;}
+.conn-banner.show{display:block;}
+
+/* Cards (families/groups) */
+.group-card,.family-card{margin-bottom:1.25rem;padding:1rem 1.25rem;border:1px solid var(--border);border-radius:10px;}
+.family-card{border-left:4px solid var(--green-600);}
+.group-card{border-left:4px solid var(--teal-600);}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;}
+.card-title{font-family:'Playfair Display',serif;font-weight:600;font-size:1.05rem;color:var(--green-900);}
+.card-title.teal{color:var(--teal-800);}
+.member-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:.82rem;margin:3px;}
+.chip-green{background:var(--green-50);color:var(--green-800);}
+.chip-teal{background:var(--teal-50);color:var(--teal-800);}
+.chip-sub{color:var(--muted);font-size:.78rem;}
+
+/* Tabs */
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="hbg" style="width:240px;height:240px;right:-40px;top:-40px;"></div>
+  <div class="hbg" style="width:110px;height:110px;right:90px;top:50px;"></div>
+  <div class="header-inner">
+    <div class="cross"></div>
+    <div class="header-text">
+      <h1>PCEA Church Member Registry</h1>
+      <p>Presbyterian Church of East Africa &mdash; Family &amp; Congregation Management</p>
+    </div>
+  </div>
+</div>
+
+<div class="nav-tabs" role="tablist">
+  <button class="active" id="tab-register"  onclick="switchTab('register')">+ Register Member</button>
+  <button id="tab-members"  onclick="switchTab('members')">Members Directory</button>
+  <button id="tab-families" onclick="switchTab('families')">Family Units</button>
+  <button id="tab-groups"   onclick="switchTab('groups')">Church Groups</button>
+</div>
+
+<div class="main">
+
+  <div class="conn-banner" id="connBanner">
+    &#9888; Cannot reach the API. Ensure the Railway backend is running and
+    <code>RAILWAY_API_URL</code> in <code>index.html</code> is set to your Railway domain.
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num" id="stat-total">—</div><div class="stat-label">Total Members</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-families">—</div><div class="stat-label">Family Units</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-district">—</div><div class="stat-label">Districts</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-groups">—</div><div class="stat-label">Church Groups</div></div>
+  </div>
+
+  <!-- REGISTER TAB -->
+  <div class="tab-content active" id="tab-content-register">
+    <div class="form-card">
+      <h2>Register New Member</h2>
+
+      <div class="section-title">Personal Information</div>
+      <div class="form-grid">
+        <div class="field"><label class="required">First Name</label><input id="f-firstName" placeholder="e.g. John"/></div>
+        <div class="field"><label>Middle Name</label><input id="f-middleName" placeholder="e.g. Kamau"/></div>
+        <div class="field"><label class="required">Family / Last Name</label><input id="f-lastName" placeholder="e.g. Mwangi"/></div>
+        <div class="field"><label>Date of Birth</label><input type="date" id="f-dob"/></div>
+        <div class="field"><label class="required">Gender</label>
+          <select id="f-gender"><option value="">— Select —</option><option>Male</option><option>Female</option></select></div>
+        <div class="field"><label>Marital Status</label>
+          <select id="f-marital"><option value="">— Select —</option><option>Single</option><option>Married</option><option>Widowed</option><option>Divorced</option></select></div>
+      </div>
+
+      <div class="section-title">Contact Details</div>
+      <div class="form-grid">
+        <div class="field"><label>Phone Number</label><input type="tel" id="f-phone" placeholder="+254 7XX XXX XXX"/></div>
+        <div class="field"><label>Email Address</label><input type="email" id="f-email" placeholder="john@example.com"/></div>
+        <div class="field full"><label>Residential Area / Location</label><input id="f-location" placeholder="e.g. Limuru Town, Kiambu"/></div>
+      </div>
+
+      <div class="section-title">Church Information</div>
+      <div class="form-grid">
+        <div class="field"><label class="required">District</label>
+          <select id="f-district">
+            <option value="">— Select District —</option>
+            <option>Nairobi District</option><option>Central District</option>
+            <option>Mt. Kenya District</option><option>Rift Valley District</option>
+            <option>Western District</option><option>Coast District</option>
+            <option>North Rift District</option><option>South Rift District</option>
+            <option>Limuru District</option><option>Kikuyu District</option>
+            <option>Githunguri District</option><option>Murang'a District</option>
+            <option>Kirinyaga District</option><option>Other</option>
+          </select></div>
+        <div class="field"><label class="required">Local Church / Congregation</label><input id="f-congregation" placeholder="e.g. St. Andrew's PCEA"/></div>
+        <div class="field"><label>Session / Presbytery</label><input id="f-session" placeholder="e.g. Limuru Presbytery"/></div>
+        <div class="field"><label>Church Role</label>
+          <select id="f-role">
+            <option value="">— Select Role —</option>
+            <option>Member</option><option>Elder (Mzee)</option><option>Deacon (Shemasi)</option>
+            <option>Sunday School Teacher</option><option>Youth Leader</option>
+            <option>Choir Member</option><option>Usher</option>
+            <option>Minister / Pastor</option><option>Church Secretary</option><option>Treasurer</option>
+          </select></div>
+        <div class="field"><label>Date Joined Church</label><input type="date" id="f-dateJoined"/></div>
+        <div class="field"><label>Membership Type</label>
+          <select id="f-memberType">
+            <option value="">— Select —</option>
+            <option>Communicant Member</option><option>Baptised Member</option>
+            <option>Adherent</option><option>Associate Member</option>
+          </select></div>
+      </div>
+
+      <div class="section-title">Family Unit</div>
+      <div class="form-grid">
+        <div class="field"><label>Family Unit Name</label><input id="f-familyUnit" placeholder="e.g. Mwangi Family"/></div>
+        <div class="field"><label>Relationship in Family</label>
+          <select id="f-familyRole">
+            <option value="">— Select —</option>
+            <option>Head of Household</option><option>Spouse</option>
+            <option>Son</option><option>Daughter</option>
+            <option>Parent</option><option>Sibling</option><option>Other Relative</option>
+          </select></div>
+      </div>
+
+      <div class="section-title">Church Groups / Guilds</div>
+      <div class="form-grid three">
+        <div class="field"><label>Primary Group</label>
+          <select id="f-group1">
+            <option value="">— None —</option>
+            <option>Mothers' Union (Wamama wa Kanisa)</option>
+            <option>Men's Fellowship (Wanaume)</option>
+            <option>Youth Fellowship (Vijana)</option>
+            <option>Sunday School</option><option>Choir / Music Team</option>
+            <option>Prayer Group</option><option>Bible Study Group</option>
+            <option>Women's Guild</option><option>Hospitality Committee</option>
+            <option>Evangelism Team</option>
+          </select></div>
+        <div class="field"><label>Secondary Group</label>
+          <select id="f-group2">
+            <option value="">— None —</option>
+            <option>Mothers' Union (Wamama wa Kanisa)</option>
+            <option>Men's Fellowship (Wanaume)</option>
+            <option>Youth Fellowship (Vijana)</option>
+            <option>Sunday School</option><option>Choir / Music Team</option>
+            <option>Prayer Group</option><option>Bible Study Group</option>
+            <option>Women's Guild</option><option>Hospitality Committee</option>
+            <option>Evangelism Team</option>
+          </select></div>
+        <div class="field"><label>Other Group</label><input id="f-group3" placeholder="Specify other group..."/></div>
+      </div>
+
+      <div class="section-title">Additional Notes</div>
+      <div class="field">
+        <label>Notes / Remarks</label>
+        <textarea id="f-notes" placeholder="Any additional pastoral or administrative notes..."></textarea>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="submitBtn" onclick="registerMember()">Register Member</button>
+        <button class="btn btn-secondary" onclick="clearForm()">Clear Form</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEMBERS TAB -->
+  <div class="tab-content" id="tab-content-members">
+    <div class="form-card">
+      <h2>Members Directory</h2>
+      <div class="search-bar">
+        <input id="searchInput" placeholder="Search by name, district, congregation..." oninput="debounceSearch()"/>
+        <select id="filterDistrict" onchange="renderMembers()">
+          <option value="">All Districts</option>
+          <option>Nairobi District</option><option>Central District</option>
+          <option>Limuru District</option><option>Githunguri District</option>
+          <option>Murang'a District</option><option>Kirinyaga District</option>
+          <option>Mt. Kenya District</option><option>Rift Valley District</option>
+          <option>Western District</option><option>Coast District</option>
+          <option>North Rift District</option><option>South Rift District</option>
+          <option>Kikuyu District</option><option>Other</option>
+        </select>
+        <select id="filterRole" onchange="renderMembers()">
+          <option value="">All Roles</option>
+          <option>Member</option><option>Elder (Mzee)</option>
+          <option>Deacon (Shemasi)</option><option>Minister / Pastor</option><option>Youth Leader</option>
+        </select>
+        <button class="btn btn-secondary" onclick="window.print()">Print</button>
+      </div>
+      <div id="membersLoading" class="loading"><div class="spinner"></div>&nbsp;Loading members from database…</div>
+      <div class="table-wrap">
+        <table id="membersTable" style="display:none">
+          <thead><tr>
+            <th>Member</th><th>Family Unit</th><th>District</th>
+            <th>Congregation</th><th>Groups</th><th>Role</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="membersBody"></tbody>
+        </table>
+      </div>
+      <div id="membersEmpty" class="empty-state" style="display:none">
+        <div class="icon">✝</div>
+        <p id="membersEmptyMsg">No members found. Register members using the Register tab.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAMILIES TAB -->
+  <div class="tab-content" id="tab-content-families">
+    <div class="form-card">
+      <h2>Family Units</h2>
+      <div id="familiesLoading" class="loading"><div class="spinner"></div>&nbsp;Loading family units…</div>
+      <div id="familiesList"></div>
+    </div>
+  </div>
+
+  <!-- GROUPS TAB -->
+  <div class="tab-content" id="tab-content-groups">
+    <div class="form-card">
+      <h2>Church Groups &amp; Guilds</h2>
+      <div id="groupsLoading" class="loading"><div class="spinner"></div>&nbsp;Loading groups…</div>
+      <div id="groupsList"></div>
+    </div>
+  </div>
+
+</div><!-- /.main -->
+
+<!-- Member detail modal -->
+<div class="modal-overlay" id="memberModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">&#10005;</button>
+    <h2 id="modalTitle">Member Details</h2>
+    <div id="modalBody"></div>
+    <div class="btn-row" style="margin-top:1.5rem">
+      <button class="btn btn-danger" id="modalDeleteBtn">Remove Member</button>
+      <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  CONFIG — Replace with your Railway backend URL
+//  e.g. https://pcea-registry-api.up.railway.app
+// ═══════════════════════════════════════════════════════════
+const RAILWAY_API_URL = 'https://YOUR-RAILWAY-APP.up.railway.app';
+
+const IS_LOCAL = ['localhost','127.0.0.1'].includes(window.location.hostname);
+const API = IS_LOCAL
+  ? `${window.location.protocol}//${window.location.host}/api`
+  : `${RAILWAY_API_URL}/api`;
+
+// ── Helpers ───────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const gv = id => $(id)?.value.trim() || '';
+const initials = (f,l) => ((f||'?')[0]+(l||'?')[0]).toUpperCase();
+
+let searchTimer = null;
+function debounceSearch(){ clearTimeout(searchTimer); searchTimer = setTimeout(renderMembers, 380); }
+
+function showToast(msg, err=false){
+  const t = $('toast');
+  t.textContent = msg;
+  t.style.background = err ? '#A32D2D' : '#27500A';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3500);
+}
+
+function roleBadge(role){
+  if(!role) return '<span class="badge badge-member">Member</span>';
+  if(role.includes('Elder'))  return `<span class="badge badge-elder">${role}</span>`;
+  if(role.includes('Deacon')) return `<span class="badge badge-deacon">${role}</span>`;
+  if(role.includes('Pastor')||role.includes('Minister')) return `<span class="badge badge-active">${role}</span>`;
+  return `<span class="badge badge-member">${role}</span>`;
+}
+
+function detailRow(label, val){
+  return `<tr>
+    <td style="padding:6px 0;color:var(--muted);width:42%;font-size:.78rem;font-weight:500;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--border);vertical-align:top">${label}</td>
+    <td style="padding:6px 0 6px 12px;border-bottom:1px solid var(--border)">${val||'—'}</td>
+  </tr>`;
+}
+
+// ── Tab switching ─────────────────────────────────────────
+function switchTab(name){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-tabs button').forEach(b=>b.classList.remove('active'));
+  $('tab-content-'+name).classList.add('active');
+  $('tab-'+name).classList.add('active');
+  if(name==='members')  renderMembers();
+  if(name==='families') renderFamilies();
+  if(name==='groups')   renderGroups();
+}
+
+// ── Stats ─────────────────────────────────────────────────
+async function loadStats(){
+  try{
+    const r = await fetch(`${API}/members/stats`);
+    if(!r.ok) throw new Error('API error');
+    const { stats } = await r.json();
+    $('stat-total').textContent    = stats.totalMembers;
+    $('stat-families').textContent = stats.totalFamilies;
+    $('stat-district').textContent = stats.totalDistricts || '—';
+    $('stat-groups').textContent   = stats.totalGroups;
+    $('connBanner').classList.remove('show');
+  } catch{
+    $('connBanner').classList.add('show');
+    ['stat-total','stat-families','stat-district','stat-groups'].forEach(id=>$(id).textContent='!');
+  }
+}
+
+// ── Register member ───────────────────────────────────────
+async function registerMember(){
+  const body = {
+    firstName:   gv('f-firstName'),  middleName:  gv('f-middleName'),
+    lastName:    gv('f-lastName'),   dob:         gv('f-dob'),
+    gender:      gv('f-gender'),     marital:     gv('f-marital'),
+    phone:       gv('f-phone'),      email:       gv('f-email'),
+    location:    gv('f-location'),   district:    gv('f-district'),
+    congregation:gv('f-congregation'),session:    gv('f-session'),
+    role:        gv('f-role'),       dateJoined:  gv('f-dateJoined'),
+    memberType:  gv('f-memberType'), familyUnit:  gv('f-familyUnit'),
+    familyRole:  gv('f-familyRole'), group1:      gv('f-group1'),
+    group2:      gv('f-group2'),     group3:      gv('f-group3'),
+    notes:       gv('f-notes'),
+  };
+
+  if(!body.firstName||!body.lastName||!body.district||!body.congregation||!body.gender){
+    showToast('Please fill in all required fields (*).', true); return;
+  }
+
+  const btn = $('submitBtn');
+  btn.disabled = true; btn.textContent = 'Registering…';
+
+  try{
+    const r = await fetch(`${API}/members`,{
+      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
+    });
+    const data = await r.json();
+    if(!r.ok) throw new Error(data.errors?.join(', ')||data.error||'Registration failed');
+    showToast('✝ Member registered successfully!');
+    clearForm(); loadStats();
+  } catch(err){
+    showToast(err.message, true);
+  } finally{
+    btn.disabled=false; btn.textContent='Register Member';
+  }
+}
+
+function clearForm(){
+  ['f-firstName','f-middleName','f-lastName','f-dob','f-gender','f-marital',
+   'f-phone','f-email','f-location','f-district','f-congregation','f-session',
+   'f-role','f-dateJoined','f-memberType','f-familyUnit','f-familyRole',
+   'f-group1','f-group2','f-group3','f-notes']
+  .forEach(id=>{ if($(id)) $(id).value=''; });
+}
+
+// ── Members directory ─────────────────────────────────────
+let membersCache = [];
+
+async function renderMembers(){
+  const search   = gv('searchInput');
+  const district = $('filterDistrict').value;
+  const role     = $('filterRole').value;
+
+  $('membersLoading').style.display='flex';
+  $('membersTable').style.display='none';
+  $('membersEmpty').style.display='none';
+
+  const p = new URLSearchParams();
+  if(search)   p.set('search', search);
+  if(district) p.set('district', district);
+  if(role)     p.set('role', role);
+
+  try{
+    const r = await fetch(`${API}/members?${p}`);
+    if(!r.ok) throw new Error('Failed to fetch');
+    const { data } = await r.json();
+    membersCache = data || [];
+  } catch{
+    $('membersLoading').style.display='none';
+    $('membersEmpty').style.display='block';
+    $('membersEmptyMsg').textContent='Failed to load members. Check server connection.';
+    return;
+  }
+
+  $('membersLoading').style.display='none';
+
+  if(!membersCache.length){
+    $('membersEmpty').style.display='block';
+    $('membersEmptyMsg').textContent='No members found matching your search.';
+    return;
+  }
+
+  $('membersTable').style.display='table';
+  $('membersBody').innerHTML = membersCache.map(m=>{
+    const fullName=[m.firstName,m.middleName,m.lastName].filter(Boolean).join(' ');
+    const groups=[m.group1,m.group2,m.group3].filter(Boolean).join(', ')||'—';
+    const sg=groups.length>28?groups.slice(0,28)+'…':groups;
+    return `<tr>
+      <td><div class="name-cell">
+        <div class="avatar">${initials(m.firstName,m.lastName)}</div>
+        <div>
+          <div style="font-weight:500">${fullName}</div>
+          <div style="font-size:.75rem;color:var(--muted)">${m.gender||''} · ${m.memberType||'Member'}</div>
+        </div>
+      </div></td>
+      <td>${m.familyUnit||'—'}<br><small style="color:var(--muted)">${m.familyRole||''}</small></td>
+      <td>${m.district}</td>
+      <td>${m.congregation}</td>
+      <td style="font-size:.8rem">${sg}</td>
+      <td>${roleBadge(m.role)}</td>
+      <td><button class="btn btn-secondary" style="padding:4px 12px;font-size:.78rem" onclick="viewMember('${m.id}')">View</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Member detail modal ───────────────────────────────────
+function viewMember(id){
+  const m = membersCache.find(x=>x.id===id); if(!m) return;
+  const fullName=[m.firstName,m.middleName,m.lastName].filter(Boolean).join(' ');
+  $('modalTitle').textContent = fullName;
+  const groups=[m.group1,m.group2,m.group3].filter(Boolean).join(', ')||'None';
+  $('modalBody').innerHTML=`<table style="width:100%;font-size:.88rem;border-collapse:collapse">
+    ${detailRow('Full Name',fullName)}
+    ${detailRow('Gender',m.gender)}
+    ${detailRow('Date of Birth',m.dob)}
+    ${detailRow('Marital Status',m.marital)}
+    ${detailRow('Phone',m.phone)}
+    ${detailRow('Email',m.email)}
+    ${detailRow('Location',m.location)}
+    ${detailRow('District',m.district)}
+    ${detailRow('Congregation',m.congregation)}
+    ${detailRow('Session / Presbytery',m.session)}
+    ${detailRow('Church Role',m.role)}
+    ${detailRow('Membership Type',m.memberType)}
+    ${detailRow('Date Joined',m.dateJoined)}
+    ${detailRow('Family Unit',m.familyUnit)}
+    ${detailRow('Family Role',m.familyRole)}
+    ${detailRow('Church Groups',groups)}
+    ${detailRow('Notes',m.notes)}
+    ${detailRow('Registered On',m.createdAt?new Date(m.createdAt).toLocaleDateString('en-GB'):'')}
+  </table>`;
+  $('modalDeleteBtn').onclick=()=>deleteMember(id,fullName);
+  $('memberModal').classList.add('open');
+}
+
+async function deleteMember(id,name){
+  if(!confirm(`Remove "${name}" from the registry?\nThis is a soft delete — the record is kept in the database.`)) return;
+  try{
+    const r = await fetch(`${API}/members/${id}`,{method:'DELETE'});
+    if(!r.ok) throw new Error('Delete failed');
+    showToast('Member removed from registry.');
+    closeModal(); renderMembers(); loadStats();
+  } catch(err){ showToast(err.message,true); }
+}
+
+function closeModal(){ $('memberModal').classList.remove('open'); }
+$('memberModal').addEventListener('click',e=>{if(e.target===$('memberModal'))closeModal();});
+
+// ── Families ──────────────────────────────────────────────
+async function renderFamilies(){
+  $('familiesLoading').style.display='flex';
+  $('familiesList').innerHTML='';
+  try{
+    const r = await fetch(`${API}/members/families`);
+    const { data } = await r.json();
+    $('familiesLoading').style.display='none';
+    if(!data?.length){
+      $('familiesList').innerHTML='<div class="empty-state"><div class="icon">✝</div><p>No family units registered yet.</p></div>';
+      return;
+    }
+    $('familiesList').innerHTML = data.map(f=>`
+      <div class="family-card">
+        <div class="card-header">
+          <div class="card-title">${f.family_unit}</div>
+          <div style="font-size:.78rem;color:var(--muted)">${f.member_count} member${f.member_count>1?'s':''}</div>
+        </div>
+        <div>${(f.members_list||'').split(', ').map(n=>`
+          <span class="member-chip chip-green"><span style="font-weight:500">${n}</span></span>`).join('')}
+        </div>
+      </div>`).join('');
+  } catch{
+    $('familiesLoading').style.display='none';
+    $('familiesList').innerHTML='<div class="empty-state"><p>Failed to load family units.</p></div>';
+  }
+}
+
+// ── Groups ────────────────────────────────────────────────
+async function renderGroups(){
+  $('groupsLoading').style.display='flex';
+  $('groupsList').innerHTML='';
+  try{
+    const r = await fetch(`${API}/members/groups`);
+    const { data } = await r.json();
+    $('groupsLoading').style.display='none';
+    if(!data?.length){
+      $('groupsList').innerHTML='<div class="empty-state"><div class="icon">✝</div><p>No group memberships registered yet.</p></div>';
+      return;
+    }
+    $('groupsList').innerHTML = data.map(g=>`
+      <div class="group-card">
+        <div class="card-header">
+          <div class="card-title teal">${g.name}</div>
+          <div style="font-size:.78rem;color:var(--muted)">${g.count} member${g.count>1?'s':''}</div>
+        </div>
+        <div>${(g.members||[]).map(m=>`
+          <span class="member-chip chip-teal">
+            <span style="font-weight:500">${m.first_name} ${m.last_name}</span>
+            <span class="chip-sub">${m.district}</span>
+          </span>`).join('')}
+        </div>
+      </div>`).join('');
+  } catch{
+    $('groupsLoading').style.display='none';
+    $('groupsList').innerHTML='<div class="empty-state"><p>Failed to load groups.</p></div>';
+  }
+}
+
+// ── Init ──────────────────────────────────────────────────
+loadStats();
+</script>
+</body>
+</html>
